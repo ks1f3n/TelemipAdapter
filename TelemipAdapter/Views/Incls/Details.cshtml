@@ -1,0 +1,48 @@
+﻿@model TelemipAdapter.Models.Incls.Incl
+
+@{
+    ViewData["Title"] = "Детали";
+}
+
+    <h3>Детали</h3>
+
+<div>
+    @*<h4>Инклинометр</h4>*@
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.InitX)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.InitX)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.X)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.X)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.InitY)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.InitY)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Y)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Y)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Period)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Period)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

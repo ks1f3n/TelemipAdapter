@@ -1,0 +1,51 @@
+﻿@model TelemipAdapter.Models.Incls.Incl
+
+@{
+    ViewData["Title"] = "Удалить";
+}
+
+    @*<h1>Удалить</h1>*@
+
+<h3>Вы уверены, что хотите удалить инклинометр?</h3>
+<div>
+    @*<h4>Инклинометр</h4>*@
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.InitX)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.InitX)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.X)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.X)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.InitY)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.InitY)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Y)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Y)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Period)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Period)
+        </dd>
+    </dl>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-action="Index">Возвратиться к списку</a>
+    </form>
+</div>
