@@ -9,6 +9,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using TelemipAdapter.Dtos;
+using TelemipAdapter.Models.Gaps;
 using TelemipAdapter.Models.Incls;
 using TelemipAdapter.Models.Values;
 
@@ -31,51 +32,67 @@ namespace TelemipAdapter.Controllers
             _sensorDbContext = sensorDbContext;
         }
 
-        //[HttpPost("Gap/{id}")]
-        //public async Task<IActionResult> CreateGapAsync([FromForm] CreateGapSensorDto createGapSensorDto)
-        //{
-        //    try
-        //    {
-        //    if (!_mqttClient.IsConnected)
-        //        await _mqttClient.ConnectAsync(_clientOptions);
+        [HttpPost("Gap/{id}")]
+        public async Task<IActionResult> CreateGapAsync([FromForm] CreateGapSensorDto createGapSensorDto)
+        {
+            try
+            {
+                if (!_mqttClient.IsConnected)
+                    await _mqttClient.ConnectAsync(_clientOptions);
 
-        //    var currGap = _sensorDbContext.Gap.Find(createGapSensorDto.ID);
+                var dateNow = DateTime.Now;
+                var dateTimeOffset = new DateTimeOffset(dateNow);
+                var unixDateTime = dateTimeOffset.ToUnixTimeSeconds();               
 
-        //    if (createGapSensorDto.v != null)
-        //    {
-        //        currGap.Value = createGapSensorDto.v[0];
-        //        _sensorDbContext.SaveChanges(true);
+                if (createGapSensorDto.v != null)
+                {
+                    _logger.LogInformation("D: {0}", createGapSensorDto.v[0]);
 
-        //        _logger.LogInformation("D: {0} D0: {1}", createGapSensorDto.v[0], currGap.InitValue);
-        //        var info = new SensorInfo(createGapSensorDto.PER, createGapSensorDto.VOLT, createGapSensorDto.CSQ);
-        //        var meas = createGapSensorDto.v.Select((d, i) => new GapSensorMeas(d, createGapSensorDto.t[i], currGap.InitValue));
-        //        var msg = new Message(info, meas);
+                    var currGap = await _sensorDbContext.Gap.FindAsync(createGapSensorDto.ID);
+                    if (currGap == null)
+                    {
+                        await _sensorDbContext.Gap.AddAsync(new Gap()
+                        {
+                            Id = createGapSensorDto.ID,
+                            Value = createGapSensorDto.v[0],
+                            InitValue = - createGapSensorDto.v[0],                            
+                            Period = 120
+                        });
+                        await _sensorDbContext.SaveChangesAsync(true);
+                        currGap = await _sensorDbContext.Gap.FindAsync(createGapSensorDto.ID);
+                    }
 
-        //        var str = JsonConvert.SerializeObject(msg);
+                    currGap.Value = createGapSensorDto.v[0];
+                    _sensorDbContext.SaveChanges(true);
 
-        //        var message = new MqttApplicationMessageBuilder()
-        //            .WithTopic("legacy/gap/" + createGapSensorDto.ID)
-        //            .WithPayload(str)
-        //            .WithAtMostOnceQoS()
-        //            .Build();
+                 
+                    var info = new SensorInfo(createGapSensorDto.PER, createGapSensorDto.VOLT, createGapSensorDto.CSQ);
+                    var meas = createGapSensorDto.v.Select((d, i) => new GapSensorMeas(d, createGapSensorDto.t[i], currGap.InitValue));
+                    var msg = new Message(info, meas);
 
-        //        await _mqttClient.PublishAsync(message);
-        //    }
-        //    var dateNow = DateTime.Now;
-        //    var dateTimeOffset = new DateTimeOffset(dateNow);
-        //    var unixDateTime = dateTimeOffset.ToUnixTimeSeconds();
+                    var str = JsonConvert.SerializeObject(msg);
 
-        //    var sper = currGap.Period > 0 ? currGap.Period : 120;
-        //    var mper = sper / 20;
-        //    return Ok(String.Format("PER={0},TSP={1},ENC={2},", sper, unixDateTime, mper));
-        //}
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex, ex.Message);
-        //    }
-        //    await _mqttClient.DisconnectAsync();
-        //    return StatusCode(StatusCodes.Status500InternalServerError);
-        //}
+                    var message = new MqttApplicationMessageBuilder()
+                        .WithTopic("legacy/gap/" + createGapSensorDto.ID)
+                        .WithPayload(str)
+                        .WithAtMostOnceQoS()
+                        .Build();
+
+                    await _mqttClient.PublishAsync(message);
+
+                    var sper = currGap.Period > 0 ? currGap.Period : 120;
+                    var mper = sper / 20;
+                    return Ok(String.Format("PER={0},TSP={1},ENC={2},", sper, unixDateTime, mper));
+                }   
+                return Ok(String.Format("PER={0},TSP={1},ENC={2},", 120, unixDateTime, 6));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+            }
+            await _mqttClient.DisconnectAsync();
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
 
         [HttpPost("Incl/{id}")]
         public async Task<IActionResult> CreateInclAsync([FromForm] CreateInclSensorDto createInclSensorDto)
@@ -101,8 +118,8 @@ namespace TelemipAdapter.Controllers
                             Id = createInclSensorDto.UID,
                             X = createInclSensorDto.X[0],
                             Y = createInclSensorDto.Y[0],
-                            InitX = 1024 - createInclSensorDto.X[0],
-                            InitY = 1024 - createInclSensorDto.Y[0],
+                            InitX = createInclSensorDto.X[0] - 1024,
+                            InitY = createInclSensorDto.Y[0] - 1024,
                             Period = 120
                         });
                         await _sensorDbContext.SaveChangesAsync(true);
