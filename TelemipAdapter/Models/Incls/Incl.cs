@@ -1,4 +1,5 @@
-﻿using TelemipAdapter.Models.Base;
+﻿using System.ComponentModel.DataAnnotations;
+using TelemipAdapter.Models.Base;
 
 namespace TelemipAdapter.Models.Incls
 {
@@ -8,6 +9,7 @@ namespace TelemipAdapter.Models.Incls
         public int X { get; set; }
         public int InitY { get; set; }
         public int Y { get; set; }
+        [Display(Name = "Период отправки данных, с")]
         public int Period { get; set; }
     }
 }

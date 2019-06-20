@@ -1,4 +1,5 @@
-﻿using TelemipAdapter.Models.Base;
+﻿using System.ComponentModel.DataAnnotations;
+using TelemipAdapter.Models.Base;
 
 namespace TelemipAdapter.Models.Gaps
 {
@@ -6,6 +7,7 @@ namespace TelemipAdapter.Models.Gaps
     {
         public int InitValue { get; set; }
         public int Value { get; set; }
+        [Display(Name = "Период отправки данных, с")]
         public int Period { get; set; }
     }
 }
