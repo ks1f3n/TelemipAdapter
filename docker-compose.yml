@@ -5,6 +5,6 @@ services:
     image: ${DOCKER_REGISTRY}loginetadapter
     build:
       context: .
-      dockerfile: LoginetAdapter/Dockerfile
+      dockerfile: TelemipAdapter/Dockerfile
     ports:
       - 80:5000
