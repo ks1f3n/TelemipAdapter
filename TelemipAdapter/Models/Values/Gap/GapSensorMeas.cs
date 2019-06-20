@@ -18,7 +18,7 @@ namespace TelemipAdapter.Models.Values
 
         public static float GetValue(int d, int d0)
         {
-            return (float)Math.Round((float)(d - d0) / 1000, 3);
+            return (float)Math.Round((float)(d - d0) / 10, 3);
         }
     }
 }
