@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ namespace TelemipAdapter.Controllers
         }
 
         // GET: Incls
+        [Authorize(Roles = "admin, user")]
         public async Task<IActionResult> Index()
         {
             return View(await _context.Incl.ToListAsync());
@@ -62,6 +64,7 @@ namespace TelemipAdapter.Controllers
         }
 
         // GET: Incls/Edit/5
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -82,6 +85,7 @@ namespace TelemipAdapter.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Edit(int id, [Bind("InitX,X,InitY,Y,Period,Id")] Incl incl)
         {
             if (id != incl.Id)
@@ -113,6 +117,7 @@ namespace TelemipAdapter.Controllers
         }
 
         // GET: Incls/Delete/5
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -133,6 +138,7 @@ namespace TelemipAdapter.Controllers
         // POST: Incls/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var incl = await _context.Incl.FindAsync(id);
