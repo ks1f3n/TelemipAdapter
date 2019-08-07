@@ -92,6 +92,7 @@ namespace TelemipAdapter.Controllers
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> Edit(int id, [Bind("InitValue,Value,Period,Id")] Gap gap)
         {
+            Gap currGap = new Gap();
             if (id != gap.Id)
             {
                 return NotFound();
@@ -101,7 +102,9 @@ namespace TelemipAdapter.Controllers
             {
                 try
                 {
-                    _context.Update(gap);
+                    currGap = await _context.Gap.FindAsync(gap.Id);
+                    currGap.Period = gap.Period;
+                    _context.Update(currGap);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -117,7 +120,7 @@ namespace TelemipAdapter.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(gap);
+            return View(currGap);
         }
 
         // GET: Gaps/Delete/5

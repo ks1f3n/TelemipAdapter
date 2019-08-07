@@ -66,7 +66,7 @@ namespace RolesApp.Controllers
                 {
                     await Authenticate(user); // аутентификация
 
-                    return RedirectToAction("Index", "Gaps");
+                    return Redirect("http://demo.telemip.ru/Gaps/"); // ToAction("Index", "Gaps");
                 }
                 ModelState.AddModelError("", "Некорректные логин и(или) пароль");
             }
