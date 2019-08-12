@@ -1,10 +1,60 @@
 version: "3.7"
 
-services:     
-  web:
-    image: ${DOCKER_REGISTRY}loginetadapter
-    build:
-      context: .
-      dockerfile: TelemipAdapter/Dockerfile
-    ports:
-      - 80:5000
+services:
+    eclipse-mosquitto:
+        container_name: mosquitto
+        image: eclipse-mosquitto:latest
+        volumes:
+        - ./mosquitto/config:/etc/mosquitto
+        - ./mosquitto/data:/var/lib/mosquitto
+        - ./mosquitto/log:/var/log/mosquitto
+        ports:
+        - 1883:1883
+
+    influxdb:
+        container_name: influxdb
+        image: influxdb:latest
+        volumes:
+        - ./influxdb/etc:/etc/influxdb
+        - ./influxdb/data:/var/lib/influxdb
+        ports:
+        - 8083:8083
+        - 8086:8086
+
+    telegraf:
+        container_name: telegraf
+        image: telegraf:latest    
+        links:
+        - influxdb
+        volumes:
+        - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+
+    grafana:
+        container_name: grafana
+        image: grafana/grafana:latest
+        volumes:
+        - ./grafana/etc:/etc/grafana:ro
+        - ./grafana/data:/var/lib/grafana
+        - ./grafana/log:/var/log/grafana
+        links:
+        - influxdb:influxdb
+        ports:
+        - 3000:3000
+        depends_on:
+        - influxdb
+
+    nginx:
+        container_name: nginx
+        image: nginx:latest
+        volumes:
+        - ./nginx:/etc/nginx
+        - ./nginx/conf.d:/etc/nginx/conf.d
+        ports:
+        - 80:80
+        - 443:443
+
+    adapter:
+        container_name: adapter
+        image: ks1f3n/http_broker_adapter:latest
+        ports:
+        - 5000:5000
