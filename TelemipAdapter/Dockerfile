@@ -5,8 +5,8 @@ EXPOSE 5000
 
 FROM mcr.microsoft.com/dotnet/core/sdk:2.2-stretch AS build
 WORKDIR /src
-COPY ["TelemipAdapter.csproj", "TelemipAdapter/"]
-RUN dotnet restore "TelemipAdapter.csproj"
+COPY ["TelemipAdapter/TelemipAdapter.csproj", "TelemipAdapter/"]
+RUN dotnet restore "TelemipAdapter/TelemipAdapter.csproj"
 COPY . .
 WORKDIR "/src/TelemipAdapter"
 RUN dotnet build "TelemipAdapter.csproj" -c Release -o /app
